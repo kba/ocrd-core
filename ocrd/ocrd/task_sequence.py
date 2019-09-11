@@ -1,6 +1,8 @@
 import os
+import json
 from shlex import split as shlex_split
 from distutils.spawn import find_executable as which # pylint: disable=import-error,no-name-in-module
+from subprocess import check_output
 
 from ocrd_utils import getLogger
 from ocrd.processor.base import run_cli
@@ -36,8 +38,17 @@ class ProcessorTask():
         self.input_file_grps = input_file_grps
         self.output_file_grps = output_file_grps
         self.parameter_path = parameter_path
+        self._ocrd_tool_json = None
+
+    @property
+    def ocrd_tool_json(self):
+        if self._ocrd_tool_json:
+            return self._ocrd_tool_json
+        self._ocrd_tool_json = json.loads(check_output([self.executable, '--dump-json']))
+        return self._ocrd_tool_json
 
     def validate(self):
+        # TODO allow raw JSON
         if self.parameter_path and not os.access(self.parameter_path, os.R_OK):
             raise Exception("Parameter file not readable: %s" % self.parameter_path)
         if not self.input_file_grps:
@@ -103,5 +114,3 @@ def run_tasks(mets, log_level, page_id, task_strs):
         for output_file_grp in task.output_file_grps:
             if not output_file_grp in workspace.mets.file_groups:
                 raise Exception("Invalid state: expected output file group not in mets: %s" % output_file_grp)
-
-
