@@ -20,12 +20,10 @@ RUN apt-get update && \
     make \
     sudo \
     git \
-    libglib2.0.0
-    # libxext6
-    # libsm6 \
-    # libxrender1 \
-RUN make deps-ubuntu
-RUN pip3 install --upgrade pip
-RUN make deps-ubuntu install
+    libglib2.0-0 \
+    python3 \
+    python3-pip
+RUN pip3 install --upgrade pip setuptools
+RUN make install
 
 ENTRYPOINT ["/usr/local/bin/ocrd"]
