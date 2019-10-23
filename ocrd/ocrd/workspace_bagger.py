@@ -18,6 +18,7 @@ from ocrd_utils import (
 
     MIMETYPE_PAGE,
     VERSION,
+    MIME_TO_EXT,
 )
 from ocrd_validators.constants import BAGIT_TXT, TMP_BAGIT_PREFIX, OCRD_BAGIT_PROFILE_URL
 from ocrd_modelfactory import page_from_file
@@ -83,7 +84,8 @@ class WorkspaceBagger():
                 if not isdir(file_grp_dir):
                     makedirs(file_grp_dir)
 
-                _basename = "%s%s" % (f.ID, f.extension)
+                extension = f.extension if f.extension else MIME_TO_EXT.get(f.mimetype, '')
+                _basename = "%s%s" % (f.ID, extension)
                 _relpath = join(f.fileGrp, _basename)
                 self.resolver.download_to_directory(file_grp_dir, f.url, basename=_basename)
                 changed_urls[f.url] = _relpath
