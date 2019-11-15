@@ -155,7 +155,7 @@ class WorkspaceValidator():
             for k in ['xResolution', 'yResolution']:
                 v = exif.__dict__.get(k)
                 if v is None or v <= 72:
-                    self.report.add_error("Image %s: %s (%s pixels per %s) is too low" % (f.ID, k, v, exif.resolutionUnit))
+                    self.report.add_warning("Image %s: %s (%s pixels per %s) is too low" % (f.ID, k, v, exif.resolutionUnit))
 
     def _validate_mets_file_group_names(self):
         """
@@ -192,7 +192,7 @@ class WorkspaceValidator():
                 self.report.add_notice("File '%s' has GROUPID attribute - document might need an update" % f.ID)
             if not f.pageId:
                 self.report.add_error("File '%s' does not manifest any physical page." % f.ID)
-            if 'url' not in self.skip and ':/' in f.url:
+            if 'url' not in self.skip and f.url and ':/' in f.url:
                 if re.match(r'^file:/[^/]', f.url):
                     self.report.add_warning("File '%s' has an invalid (Java-specific) file URL '%s'" % (f.ID, f.url))
                 scheme = f.url[0:f.url.index(':')]
